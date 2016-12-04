@@ -19,15 +19,6 @@ class Card
     "#{rank}#{SUITS[suit]}"
   end
 
-  def value
-    return 11 if @rank == 'A'
-    if %w(J Q K).include? @rank
-      10
-    else
-      @rank.to_i
-    end
-  end
-
   private
 
   attr_reader :suit

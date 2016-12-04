@@ -8,4 +8,8 @@ class Dealer < User
   def to_s
     "#{role}: #{name}, bill: #{bill}, cards: #{'*' * cards.size }"
   end
+
+  def show_info
+    "#{role}: #{name}, bill: #{bill}, cards: #{cards.join(', ')}"
+  end
 end

@@ -17,13 +17,50 @@ class Game
 
   def execute
     create_players
-    puts show_card_deck
     play_round
   end
 
   def play_round
     deal_cards
     make_bet
+    display_players
+  end
+
+  def display_players
+    players.each do |_, player|
+      if dealer?(player)
+        puts player
+      else
+        puts "#{player}, score: #{score(player.cards)}"
+      end
+    end
+  end
+
+  def dealer?(player)
+    player.role == :dealer
+  end
+
+  def score(cards)
+    aces = []
+    normal_cards = []
+    cards.each do |card|
+      aces << card if card.rank == 'A'
+      normal_cards << card if card.rank != 'A'
+    end
+    sum = normal_cards.inject(0) do |sum, card|
+      if %w(J Q K).include? card.rank
+        sum + 10
+      else
+        sum + card.rank.to_i
+      end
+    end
+    sum_with_aces(sum, aces)
+  end
+
+  def sum_with_aces(sum, aces)
+    # FEXME: +ace = 21, 2 ace ?
+    aces.map { sum + 11 > 21 ? sum += 1 : sum += 11 }
+    sum
   end
 
   def show_card_deck
