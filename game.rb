@@ -76,10 +76,8 @@ class Game
     when :take_card
       players[:player].take_card(card_deck.delete_at(0))
       players[:player].skiped
-      puts players[:player].cards.join(', ')
     when :open_cards
-      player_cards = players[:player].open_cards
-      puts "#{player_cards.join(', ')} score #{score(player_cards)}"
+      players[:player].open_cards
     end
     action
   end
@@ -97,7 +95,7 @@ class Game
     allowed_action = players[:player].allowed_actions.keys
     puts allowed_action.join(', ')
     action = gets.chomp
-  raise 'Action not found' unless allowed_action.include?(action.to_sym)
+    raise 'Action not found' unless allowed_action.include?(action.to_sym)
     action.to_sym
   rescue RuntimeError => e
     puts "[ERROR] #{e.message}"
@@ -136,8 +134,8 @@ class Game
   end
 
   def sum_with_aces(sum, aces)
-    # FEXME: +ace = 21, 2 ace ?
-    aces.map { sum + 11 > 21 ? sum += 1 : sum += 11 }
+    return 12 if sum == 10 && aces.size == 2
+    aces.map { sum += sum + 11 > 21 ? 1 : 11 }
     sum
   end
 
