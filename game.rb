@@ -71,9 +71,9 @@ class Game
     puts "[Player]: #{players[:player]}, score: #{score_player}"
     puts "[Dealer]: #{players[:dealer].show_info}, score: #{score_dealer}"
     reset_players
-    return winner(:dealer) if score_player > 21 || score_player < score_dealer
-    return winner(:player) if score_player > score_dealer
-    winner_friendship
+    return winner(:dealer) if score_player > 21 || (score_player < score_dealer && score_dealer < 22)
+    return winner_friendship if score_player == score_dealer
+    winner(:player)
   end
 
   def winner(player)
