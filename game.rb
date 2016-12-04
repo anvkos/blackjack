@@ -17,13 +17,91 @@ class Game
 
   def execute
     create_players
-    play_round
+    5.times do |i|
+      puts "#{'*' * 10} [ Round #{i} ] #{'*' * 10}"
+      puts show_card_deck
+      puts "BANK: #{@bank}"
+      play_round
+    end
   end
 
   def play_round
     deal_cards
     make_bet
     display_players
+    player_action = player_do
+    return complete_round if player_action == :open_cards
+    dealer_do
+    display_players
+    player_do
+    complete_round
+  end
+
+  def complete_round
+    score_player = score(players[:player].cards)
+    score_dealer = score(players[:dealer].cards)
+    puts "[Player]: #{players[:player]}, score: #{score_player}"
+    puts "[Dealer]: #{players[:dealer].show_info}, score: #{score_dealer}"
+    reset_players
+    return winner(:dealer) if score_player > 21 || score_player < score_dealer
+    return winner(:player) if score_player > score_dealer
+    winner_friendship
+  end
+
+  def winner(player)
+    players[player].bill += @bank
+    @bank = 0
+    puts "WINNER: #{players[player].name}"
+  end
+
+  def winner_friendship
+    priz = bank / 2
+    @bank = 0
+    players[:player].bill += priz
+    players[:dealer].bill += priz
+  end
+
+  def reset_players
+    players.each do |key, _|
+      players[key].reset_actions
+      players[key].cards = []
+    end
+  end
+
+  def player_do
+    action = player_action
+    case action
+    when :skip
+      players[:player].skiped
+    when :take_card
+      players[:player].take_card(card_deck.delete_at(0))
+      players[:player].skiped
+      puts players[:player].cards.join(', ')
+    when :open_cards
+      player_cards = players[:player].open_cards
+      puts "#{player_cards.join(', ')} score #{score(player_cards)}"
+    end
+    action
+  end
+
+  def dealer_do
+    if score(players[:dealer].cards) < 18
+      players[:dealer].take_card(card_deck.delete_at(0))
+    else
+      players[:dealer].skiped
+    end
+  end
+
+  def player_action
+    puts '[Player action:]'
+    allowed_action = players[:player].allowed_actions.keys
+    puts allowed_action.join(', ')
+    action = gets.chomp
+  raise 'Action not found' unless allowed_action.include?(action.to_sym)
+    action.to_sym
+  rescue RuntimeError => e
+    puts "[ERROR] #{e.message}"
+    retry
   end
 
   def display_players
@@ -90,7 +168,8 @@ class Game
 
   def create_player
     puts 'Hi, what is your name:'
-    name = gets.chomp
+    # name = gets.chomp
+    name = 'Gamer'
     Player.new(name, bill: START_GAMER_BILL)
   end
 
