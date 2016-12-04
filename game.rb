@@ -17,12 +17,40 @@ class Game
 
   def execute
     create_players
-    5.times do |i|
-      puts "#{'*' * 10} [ Round #{i} ] #{'*' * 10}"
-      puts show_card_deck
-      puts "BANK: #{@bank}"
-      play_round
+    i = 1
+    loop do
+      if play?
+        puts "#{'*' * 10} ROUND #{i} #{'*' * 10}"
+        play_round
+      else
+        puts 'Bye, Bye!'
+        break
+      end
+      i += 1
     end
+  end
+
+  private
+
+  def play?
+    puts 'Do you want to play(yes/no):'
+    answer = gets.chomp
+    if answer == 'yes' || answer == 'y'
+      return true if players_can_play?
+    end
+    false
+  end
+
+  def players_can_play?
+    if players[:player].bill - BET < 0
+      puts 'The player does not have enough money to play!'
+      return false
+    elsif players[:dealer].bill - BET < 0
+      puts 'The dealer does not have enough money to play!'
+      puts 'You absolute winner!'
+      return false
+    end
+    true
   end
 
   def play_round
@@ -166,12 +194,9 @@ class Game
 
   def create_player
     puts 'Hi, what is your name:'
-    # name = gets.chomp
-    name = 'Gamer'
+    name = gets.chomp
     Player.new(name, bill: START_GAMER_BILL)
   end
-
-  private
 
   def mix_deck(deck)
     deck.shuffle
