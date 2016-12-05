@@ -16,7 +16,7 @@ class User
   def initialize(name, role = :player, options = {})
     @name = name
     @role = role
-    @bill = options[:bill] ||= 0
+    @bill = options[:bill] || 0
     @cards = []
     @actions = default_actions
   end
@@ -42,11 +42,13 @@ class User
     @actions = default_actions
   end
 
-  def default_actions
-    { skip: true, take_card: true, open_cards: true }
-  end
-
   def allowed_actions
     @actions.select { |_, v| v }
+  end
+
+  protected
+
+  def default_actions
+    { skip: true, take_card: true, open_cards: true }
   end
 end
