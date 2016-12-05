@@ -6,7 +6,7 @@ class Dealer < User
   end
 
   def to_s
-    "#{role}: #{name}, bill: #{bill}, cards: #{'*' * cards.size }"
+    "#{role}: #{name}, bill: #{bill}, cards: #{'*' * cards.size}"
   end
 
   def show_info
